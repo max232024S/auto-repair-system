@@ -1,0 +1,1 @@
+-- Placeholder for sample data. Fill in once schema.sql is final.

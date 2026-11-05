@@ -1,0 +1,1 @@
+-- Placeholder. Teammate owns the real schema; replace this file with theirs.
