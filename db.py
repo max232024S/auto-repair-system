@@ -27,7 +27,7 @@ def get_pool():
             port=int(_env("DB_PORT", "MYSQLPORT", "3306")),
             user=_env("DB_USER", "MYSQLUSER", "root"),
             password=_env("DB_PASSWORD", "MYSQLPASSWORD", ""),
-            database=_env("DB_NAME", "MYSQLDATABASE", "auto_repair"),
+            database=_env("DB_NAME", "MYSQLDATABASE", "auto_repair_db"),
             autocommit=False,
         )
     return _pool
