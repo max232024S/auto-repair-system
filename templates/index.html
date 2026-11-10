@@ -1,5 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Auto Repair &amp; Vehicle Maintenance Tracker</h1>
-<p class="text-muted">Sprint 1 skeleton. Check <a href="{{ url_for('health') }}">/health</a> to confirm the DB connection.</p>
+<h1 class="mb-4">Auto Repair &amp; Vehicle Maintenance Tracker</h1>
+<div class="row g-3">
+  <div class="col-md-4">
+    <a href="{{ url_for('customers.index') }}" class="card text-decoration-none h-100">
+      <div class="card-body">
+        <h5 class="card-title">Customers</h5>
+        <p class="display-6 mb-0">{{ counts.customers }}</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('vehicles.index') }}" class="card text-decoration-none h-100">
+      <div class="card-body">
+        <h5 class="card-title">Vehicles</h5>
+        <p class="display-6 mb-0">{{ counts.vehicles }}</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('repairs.index') }}" class="card text-decoration-none h-100">
+      <div class="card-body">
+        <h5 class="card-title">Open repairs</h5>
+        <p class="display-6 mb-0">{{ counts.open_repairs }}</p>
+      </div>
+    </a>
+  </div>
+</div>
 {% endblock %}

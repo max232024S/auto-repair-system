@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Repairs{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Repairs</h1>
+  <a href="{{ url_for('repairs.create') }}" class="btn btn-primary">Add repair</a>
+</div>
+
+<ul class="nav nav-pills mb-3">
+  <li class="nav-item"><a class="nav-link {% if not current_status %}active{% endif %}" href="{{ url_for('repairs.index') }}">All</a></li>
+  {% for s in statuses %}
+  <li class="nav-item"><a class="nav-link {% if current_status == s %}active{% endif %}" href="{{ url_for('repairs.index', status=s) }}">{{ s }}</a></li>
+  {% endfor %}
+</ul>
+
+{% if repairs %}
+<table class="table table-hover bg-white">
+  <thead><tr><th>Date</th><th>Description</th><th>Vehicle</th><th>Customer</th><th>Status</th><th class="text-end">Cost</th><th></th></tr></thead>
+  <tbody>
+    {% for r in repairs %}
+    <tr>
+      <td>{{ r.repair_date }}</td>
+      <td>{{ r.description }}</td>
+      <td><a href="{{ url_for('vehicles.detail', vehicle_id=r.vehicle_id) }}">{{ r.year }} {{ r.make }} {{ r.model }}</a></td>
+      <td><a href="{{ url_for('customers.detail', customer_id=r.customer_id) }}">{{ r.first_name }} {{ r.last_name }}</a></td>
+      <td>{{ m.status_badge(r.status) }}</td>
+      <td class="text-end">{{ r.cost|money }}</td>
+      <td class="text-end"><a href="{{ url_for('repairs.edit', repair_id=r.repair_id) }}" class="btn btn-sm btn-outline-primary">Edit</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="text-muted">No repairs found.</p>
+{% endif %}
+{% endblock %}

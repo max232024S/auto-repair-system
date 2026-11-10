@@ -69,6 +69,33 @@ def execute(sql, params=None):
         conn.close()
 
 
+def describe_error(err):
+    """Turn a known MySQL constraint error into (field, friendly_message).
+
+    field is the form field to attach the message to, or None for a page-level
+    message. Anything we don't recognize is re-raised so it shows up as a 500
+    and in the logs instead of being silently swallowed.
+    """
+    msg = str(err).lower()
+    if err.errno == 1062:  # duplicate entry on a UNIQUE column
+        if "email" in msg:
+            return "email", "That email is already in use by another customer."
+        if "vin" in msg:
+            return "vin", "A vehicle with that VIN already exists."
+        return None, "That record already exists."
+    if err.errno == 1451:  # delete blocked by a foreign key (ON DELETE RESTRICT)
+        return None, "Can't delete this because other records still reference it. Delete those first."
+    if err.errno == 1452:  # insert/update points at a row that doesn't exist
+        if "customer_id" in msg:
+            return "customer_id", "That customer doesn't exist."
+        if "vehicle_id" in msg:
+            return "vehicle_id", "That vehicle doesn't exist."
+        return None, "A referenced record doesn't exist."
+    if err.errno == 3819:  # CHECK constraint failed
+        return None, "A value failed a database check. Double check the numbers you entered."
+    raise err
+
+
 @contextmanager
 def transaction():
     """Multi-statement transaction. Commits on success, rolls back on any exception.

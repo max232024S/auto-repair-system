@@ -84,7 +84,9 @@ do not automatically connect to your local database.
 ```
 app.py              Flask app, routes, error handlers
 db.py               Connection pool + query/execute/transaction helpers
-templates/          Jinja2 templates (base.html is the layout)
+validation.py       Form validation for each table
+routes/             One blueprint per table (customers, vehicles, repairs)
+templates/          Jinja2 templates (base.html is the layout, _macros.html has form helpers)
 static/css, js      Styles and scripts
 sql/                schema.sql, seed.sql and queries.sql
 Procfile            Gunicorn start command for Railway
@@ -93,4 +95,5 @@ Procfile            Gunicorn start command for Railway
 ## AI use disclosure
 
 - Original project skeleton (app.py, db.py, templates, config files, README) generated with Claude Code, then reviewed by the team.
+- Customer/Vehicle/Repair CRUD routes (routes/), form validation (validation.py), db.describe_error, and their templates generated with Claude Code.
 - Sprint 1 example SQL scripts and local-configuration/README edits drafted with ChatGPT; verify against finalized relational schema and review before committing.

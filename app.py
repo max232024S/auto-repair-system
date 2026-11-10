@@ -4,18 +4,37 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template
 
-load_dotenv()  # no-op on Railway if there's no .env file
+# override=True so .env wins over stale vars already in the terminal
+# (VS Code's python.terminal.useEnvFile injects .env when a terminal opens).
+# No-op on Railway since there's no .env file there.
+load_dotenv(override=True)
 
 import db  # noqa: E402  (import after env is loaded)
+from routes import customers, repairs, vehicles  # noqa: E402
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-only-change-me")
 logging.basicConfig(level=logging.INFO)
 
+app.register_blueprint(customers.bp)
+app.register_blueprint(vehicles.bp)
+app.register_blueprint(repairs.bp)
+
+
+@app.template_filter("money")
+def money(value):
+    return f"${value:,.2f}" if value is not None else ""
+
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    counts = db.query(
+        """SELECT (SELECT COUNT(*) FROM Customer) AS customers,
+                  (SELECT COUNT(*) FROM Vehicle) AS vehicles,
+                  (SELECT COUNT(*) FROM Repair WHERE status <> 'Completed') AS open_repairs""",
+        one=True,
+    )
+    return render_template("index.html", counts=counts)
 
 
 @app.route("/health")

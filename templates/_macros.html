@@ -1,0 +1,48 @@
+{# Reusable form pieces. Import with: {% import "_macros.html" as m %} #}
+
+{% macro _val(values, name) -%}
+  {{ values.get(name) if values.get(name) is not none else '' }}
+{%- endmacro %}
+
+{% macro input(name, label, values, errors, type="text", required=True, maxlength=none, extra="") %}
+<div class="mb-3">
+  <label for="{{ name }}" class="form-label">{{ label }}{% if not required %} <span class="text-muted small">(optional)</span>{% endif %}</label>
+  <input type="{{ type }}" id="{{ name }}" name="{{ name }}"
+         class="form-control{% if errors.get(name) %} is-invalid{% endif %}"
+         value="{{ _val(values, name) }}"
+         {% if required %}required{% endif %}
+         {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}
+         {{ extra }}>
+  {% if errors.get(name) %}<div class="invalid-feedback">{{ errors[name] }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro select(name, label, values, errors, options, placeholder="Choose...") %}
+<div class="mb-3">
+  <label for="{{ name }}" class="form-label">{{ label }}</label>
+  <select id="{{ name }}" name="{{ name }}" required
+          class="form-select{% if errors.get(name) %} is-invalid{% endif %}">
+    {% if placeholder %}<option value="">{{ placeholder }}</option>{% endif %}
+    {% for value, text in options %}
+      <option value="{{ value }}" {% if values.get(name) is not none and values.get(name)|string == value|string %}selected{% endif %}>{{ text }}</option>
+    {% endfor %}
+  </select>
+  {% if errors.get(name) %}<div class="invalid-feedback">{{ errors[name] }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro form_error(errors) %}
+  {% if errors.get('_form') %}<div class="alert alert-danger">{{ errors['_form'] }}</div>{% endif %}
+{% endmacro %}
+
+{% macro delete_button(action, what) %}
+<form method="post" action="{{ action }}" class="d-inline"
+      onsubmit="return confirm('Delete this {{ what }}? This cannot be undone.');">
+  <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+</form>
+{% endmacro %}
+
+{% macro status_badge(status) %}
+  {% set color = {'Pending': 'secondary', 'In Progress': 'warning', 'Completed': 'success'}.get(status, 'light') %}
+  <span class="badge text-bg-{{ color }}">{{ status }}</span>
+{% endmacro %}
